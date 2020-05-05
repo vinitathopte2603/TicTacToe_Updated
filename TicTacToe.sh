@@ -17,6 +17,8 @@ turn=0
 player=''
 computer=''
 nonEmptyCount=1
+computerP=0
+playerP=0
 
 function boardInitialize(){
 
@@ -120,9 +122,84 @@ function checkTieCase(){
 
 }
 
-function userInput() {
+function checkWinningMove(){
+	counter=1
+	winMove=false
 
-		read -p "Enter you position in between 1 to 9: " POSITION 
+	for (( i=1; i<=3; i++ ))
+	do
+		if [[ ${board[$counter]} == ${board[$counter+$1+$1]} ]] && [[ ${board[$counter+$1]} == 0 ]] &&[[ ${board[$counter]} == $computer ]]
+		then
+			computerP=$(( $counter+$1 ))
+			echo " winning move is " $computerP
+			board[$computerP]=$computer
+			winMove=true
+			break
+		elif [[ ${board[$counter]} == ${board[$counter+$1]} ]] && [[ ${board[$counter+$1+$1]} == 0 ]] && [[ ${board[$counter]} == $computer ]]
+		then
+			computerP=$(( $counter+$1+$1 ))
+			echo "winning move is " $computerP
+			board[$computerP]=$computer
+			winMove=true
+			break
+		elif [[ ${board[$counter+$1]} == ${board[$counter+$1+$1]} ]] && [[ ${board[$counter]} == '-' ]] && [[ ${board[$counter+$1]} == $computer ]]
+		then
+			computerP=$counter
+			echo "winning move is " $computerP
+			board[$computerP]=$computer
+			winMove=true
+			break
+		fi
+	counter=$(( $counter+$2 ))
+	done
+}
+
+function checkWinningMovePlayer(){
+        counterPlayer=1
+        winMovePlayer=false
+
+        for (( i=1; i<=3; i++ ))
+        do
+                if [[ ${board[$counterPlayer]} == ${board[$counterPlayer+$1+$1]} ]] && [[ ${board[$counterPlayer+$1]} == 0 ]] &&[[ ${board[$counterPlayer]} == $player ]]
+                then
+                        playerP=$(( $counterPlayer+$1 ))
+                        echo "player winning move is " $playerP
+                        board[$playerP]=$player
+                        winMovePlayer=true
+                        break
+                elif [[ ${board[$counterPlayer]} == ${board[$counterPlayer+$1]} ]] && [[ ${board[$counterPlayer+$1+$1]} == 0 ]] && [[ ${board[$counterPlayer]} == $player ]]
+                then
+                        playerP=$(( $counterPlayer+$1+$1 ))
+                        echo "player winning move is " $playerP
+                        board[$playerP]=$player
+                        winMovePlayer=true
+                        break
+                elif [[ ${board[$counterPlayer+$1]} == ${board[$counterPlayer+$1+$1]} ]] && [[ ${board[$counterPlayer]} == '-' ]] && [[ ${board[$counterPlayer+$1]} == $player ]]
+                then
+                        playerP=$counter
+                        echo "player winning move is " $playerP
+                        board[$playerP]=$player
+                        winMovePlayer=true
+                        break
+                fi
+        counterPlayer=$(( $counterPlayer+$2 ))
+        done
+}
+
+
+
+
+
+
+function userInput() {
+	row=1
+	column=3
+	winMovePlayer=false
+	read -p "Enter you position in between 1 to 9: " POSITION
+	checkWinningMovePlayer $row $column
+        checkWinningMovePlayer $column $row
+	if [ $winMovePlayer == false ]
+	then
 		if [ ${board[$POSITION]} -eq $TAIL ]
 		then
 			echo "player turn"
@@ -133,23 +210,33 @@ function userInput() {
 			echo "Invalid input"
 			userInput
 		fi
-	playerTurn=false
+	fi
+		playerTurn=false
 
 }
 
 
 function computerInput(){
+	row=1
+	column=3
+	winMove=false
+
 	echo "Computer is Playing"
-	
+	checkWinningMove $row $column
+	checkWinningMove $column $row
 	POSITION=$((RANDOM%9+1))
-	if [ ${board[$POSITION]} == $TAIL ]
+
+	if [ $winMove == false ]
 	then
-		board[$POSITION]=$computer
-	else
-		echo "Wrong move "
-		computerInput
+		if [ ${board[$POSITION]} == $TAIL ]
+		then
+			board[$POSITION]=$computer
+		else
+			echo "Wrong move "
+			computerInput
+		fi
 	fi
-	playerTurn=true
+		playerTurn=true
 }
 
 
