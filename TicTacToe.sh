@@ -11,10 +11,12 @@ NUMBEROFROWS=3;
 NUMBEROFCOLUMNS=3;
 BOARD_POSITION=10;
 
+playerTurn=false
 winner=false
 turn=0
 player=''
 computer=''
+nonEmptyCount=1
 
 function boardInitialize(){
 
@@ -100,41 +102,72 @@ function checkDiagonalCase()
 		counter=$(($counter+1))
 	done
 }
+
+function checkTieCase(){
+
+	while [ ${board[$nonEmptyCount]} != 0 ]
+	do
+		if [ $nonEmptyCount -eq 9 ]
+		then
+			printBoard
+			echo "Game Is Tie"
+			winner=true
+			break
+		else
+			nonEmptyCount=$(($nonEmptyCount+1))
+		fi
+	done
+
+}
+
 function userInput() {
 
-	count=0
-	if [ $(($turn%2)) -eq 0  ]
-	then
 		read -p "Enter you position in between 1 to 9: " POSITION 
-		if [ ${board[$POSITION]} -eq 0 ]
+		if [ ${board[$POSITION]} -eq $TAIL ]
 		then
+			echo "player turn"
 			board[$POSITION]=$player
 			printBoard
 			turn=$(( $turn + 1 ))
 		else
-			echo "Enter number in between 0 to 10"
+			echo "Invalid input"
 			userInput
 		fi
-	else
-		echo "Computer Turn"
-		printBoard
-		turn=$(( $turn +1 ))
-	fi
+	playerTurn=false
+
 }
+
+
+function computerInput(){
+	echo "Computer is Playing"
+	
+	POSITION=$((RANDOM%9+1))
+	if [ ${board[$POSITION]} == $TAIL ]
+	then
+		board[$POSITION]=$computer
+	else
+		echo "Wrong move "
+		computerInput
+	fi
+	playerTurn=true
+}
+
 
 function ticTacToe(){
 
 	checkingToss=$((RANDOM%2))
 	if [[ $checkingToss -eq $HEAD ]]
 	then
+		playerTurn=true
 		player='X'
 		computer='O'
 		echo "Player play first"
 		printBoard
-		userInput
+                userInput
+
 	else
-		player='O'
-		computer='X'
+		player='X'
+		computer='O'
 		echo "computer play first"
 	fi
 }
@@ -144,9 +177,19 @@ ticTacToe
 
 while [ $winner == false ]
 do
+	
 		printBoard
-		userInput
-		checkHorizontalCase $player
-		checkVerticalCase $player
-		checkDiagonalCase $player
+		if [ $playerTurn == true ]
+		then 
+			userInput
+			checkHorizontalCase $player
+			checkVerticalCase $player
+			checkDiagonalCase $player
+		else
+			computerInput
+			checkHorizontalCase $computer
+                        checkVerticalCase $computer
+                        checkDiagonalCase $computer
+
+		fi
 done
