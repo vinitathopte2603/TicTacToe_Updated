@@ -73,6 +73,28 @@ function middleCheck()
 
 }
 
+function randomCheck(){
+	 if [ $compWinMove = false ]
+	 then
+                for((i=2; i<=BOARD_POSITION; i=$(($i+2)) ))
+                do
+                if [ ${board[$i]} == '-' ]
+                then
+                        computerP=$i
+                board[$computerP]=$computer
+                compWinMove=true
+                break
+                 fi
+                  if [ $i -eq 3 ] || [ $i -eq 6 ]
+                  then
+                          i=$(($i+1))
+                  fi
+                done
+        fi
+
+
+}
+
 
 function checkHorizontalCase(){
 
@@ -259,6 +281,7 @@ function computerInput(){
 	checkWinningMove $column $row
 	cornerCheck
 	middleCheck
+	randomCheck
 	POSITION=$((RANDOM%9+1))
 
 	if [ $winMove == false ]
@@ -285,7 +308,6 @@ function ticTacToe(){
 		computer='O'
 		echo "Player play first"
 		printBoard
-                userInput
 
 	else
 		player='X'
@@ -307,11 +329,12 @@ do
 			checkHorizontalCase $player
 			checkVerticalCase $player
 			checkDiagonalCase $player
+			checkTieCase $player
 		else
 			computerInput
 			checkHorizontalCase $computer
                         checkVerticalCase $computer
                         checkDiagonalCase $computer
-
+			checkTieCase $computer
 		fi
 done
