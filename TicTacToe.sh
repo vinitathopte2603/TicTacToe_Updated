@@ -19,7 +19,7 @@ computer=''
 nonEmptyCount=1
 computerP=0
 playerP=0
-
+compWinMove=false
 function boardInitialize(){
 
 	for (( i=1 ; i<=$BOARD_POSITION; i++ ))
@@ -38,6 +38,27 @@ function  printBoard(){
 	echo " | "${board[7]}" | "${board[8]}" | "${board[9]}" | "
 	echo " -------------"
 
+}
+
+function cornerCheck()
+{
+	 if [ $compWinMove = false ]
+   then
+		for((i=1; i<=BOARD_POSITION; i=$(($i+2)) ))
+		do
+				if [ ${board[$i]} == '-' ]
+				then
+					computerPosition=$i
+            	board[$computerP]=$computer
+            	compWinMove=true
+            break
+				fi
+				if [ $i -eq 3 ]
+				then
+					i=$(($i+2))
+				fi
+		done
+	fi
 }
 
 
@@ -224,6 +245,7 @@ function computerInput(){
 	echo "Computer is Playing"
 	checkWinningMove $row $column
 	checkWinningMove $column $row
+	cornerCheck
 	POSITION=$((RANDOM%9+1))
 
 	if [ $winMove == false ]
