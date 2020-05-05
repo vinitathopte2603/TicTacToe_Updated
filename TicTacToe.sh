@@ -46,9 +46,9 @@ function cornerCheck()
    then
 		for((i=1; i<=BOARD_POSITION; i=$(($i+2)) ))
 		do
-				if [ ${board[$i]} == '-' ]
-				then
-					computerPosition=$i
+		if [ ${board[$i]} == '-' ]
+		then
+			computerP=$i
             	board[$computerP]=$computer
             	compWinMove=true
             break
@@ -59,6 +59,18 @@ function cornerCheck()
 				fi
 		done
 	fi
+}
+
+function middleCheck()
+{
+	middle=5
+	if [[ $compWinMove = false ]] && [[ ${board[$middle]} == '-' ]]
+	then
+		computerP=$middle
+               board[$computerP]=$computer
+               compWinMove=true
+   fi
+
 }
 
 
@@ -246,6 +258,7 @@ function computerInput(){
 	checkWinningMove $row $column
 	checkWinningMove $column $row
 	cornerCheck
+	middleCheck
 	POSITION=$((RANDOM%9+1))
 
 	if [ $winMove == false ]
